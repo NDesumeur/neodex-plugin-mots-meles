@@ -1,7 +1,7 @@
 {
   "id": "neodex.motsmeles",
   "name": "Mots mêlés",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "author": "NDesumeur",
   "description": "Mots mêlés en français : retrouve les mots cachés en glissant de la première à la dernière lettre. 17 thèmes (animaux, pays, villes, métiers, sports, mangas…) ou tous mélangés, grilles de 10 × 10 à 20 × 20 avec 8 à 30 mots, et trois niveaux : 2 sens, avec diagonales, ou 8 sens à l'envers compris. Chronomètre et record par taille et niveau.",
   "icon": "icon.png",
