@@ -7,9 +7,11 @@ Words hidden in a grid of letters, to find by dragging from their first to their
 ## How to play
 
 - The **Words to find** list gives every hidden word, in alphabetical order.
-- **Drag** from the first to the last letter of a word, in a straight line; the reverse direction works too. A found word is coloured in the grid and in the list.
+- **Drag** from the first to the last letter of a word, in a straight line; the reverse direction works too. A found word gets a **coloured stroke** in the grid (a pixel stroke, straight or diagonal), and its tag takes the same colour in the list. While you drag, a white stroke shows your selection.
 - Accents and cedillas disappear in the grid: "BESANÇON" hides as "BESANCON". The list keeps the exact spelling.
 - The timer starts at your first selection and stops when every word is found.
+
+The grid is drawn in pixel art and grows with the window, from a small laptop to a big screen.
 
 ## Settings
 

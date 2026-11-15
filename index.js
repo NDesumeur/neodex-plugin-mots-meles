@@ -1,16 +1,17 @@
 // Mots mêlés : ton appli d'origine (HTML et code inchangés), livrée en plugin.
 // Ses données sont dans le dossier du plugin, que NeoDex sauvegarde (synchro cloud et sauvegardes) ; à la première ouverture elle reprend ce que tu avais dans NeoDex.
 // Elle tourne dans le bac à sable de NeoDex, avec ses outils d'interface (ctx.host) et seulement les autorisations de son plugin.json.
-const HTML = "<div class=\"appWrap wide\">\n      <div class=\"agHead\"><span class=\"label\">Mots mêlés</span><span class=\"hint\" id=\"wsInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"wsTheme\"></select><select class=\"f gSel\" id=\"wsSize\"><option value=\"10\">10 × 10 · 8 mots</option><option value=\"12\" selected>12 × 12 · 12 mots</option><option value=\"15\">15 × 15 · 18 mots</option><option value=\"18\">18 × 18 · 24 mots</option><option value=\"20\">20 × 20 · 30 mots</option></select><select class=\"f gSel\" id=\"wsLevel\"><option value=\"facile\">Facile · 2 sens</option><option value=\"normal\" selected>Normal · diagonales</option><option value=\"difficile\">Difficile · 8 sens</option></select><button class=\"btn px\" id=\"wsNew\">NOUVELLE GRILLE</button></div></div>\n      <div class=\"wsMain\"><div id=\"wsGrid\" class=\"px\"></div><div class=\"sysCard px wsSide\"><span class=\"label\">Mots à trouver</span><div id=\"wsWords\"></div></div></div>\n      <div class=\"hint\">Glisse de la première à la dernière lettre d'un mot. Le chrono démarre à ta première sélection.</div>\n    </div>";
+const HTML = "<div class=\"appWrap wide\">\n      <div class=\"agHead\"><span class=\"label\">Mots mêlés</span><span class=\"hint\" id=\"wsInfo\"></span><div class=\"agNav\"><select class=\"f gSel\" id=\"wsTheme\"></select><select class=\"f gSel\" id=\"wsSize\"><option value=\"10\">10 × 10 · 8 mots</option><option value=\"12\" selected>12 × 12 · 12 mots</option><option value=\"15\">15 × 15 · 18 mots</option><option value=\"18\">18 × 18 · 24 mots</option><option value=\"20\">20 × 20 · 30 mots</option></select><select class=\"f gSel\" id=\"wsLevel\"><option value=\"facile\">Facile · 2 sens</option><option value=\"normal\" selected>Normal · diagonales</option><option value=\"difficile\">Difficile · 8 sens</option></select><button class=\"btn px\" id=\"wsNew\">NOUVELLE GRILLE</button></div></div>\n      <div class=\"wsMain\"><div class=\"wsBox\"><canvas id=\"wsGrid\" width=\"200\" height=\"200\" aria-label=\"Grille de mots mêlés\"></canvas></div><div class=\"wsSide\"><div class=\"wsHead\">MOTS À TROUVER <b id=\"wsCount\"></b></div><div id=\"wsWords\"></div></div></div>\n      <div class=\"hint\">Glisse de la première à la dernière lettre d'un mot. Le chrono démarre à ta première sélection.</div>\n    </div>";
 /*CSS-MOVED*/ const CSS = `.gSel{width:auto;font-size:14px;padding:6px 10px;margin-right:8px}
-.wsMain{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
-#wsGrid{--fill:var(--field);display:grid;padding:8px;touch-action:none;cursor:var(--cp,pointer)}
-.wsCell{display:grid;place-items:center;font-family:var(--title);color:var(--lilac)}
-.wsCell.sel{background:rgba(var(--pkr),.45) !important;color:#fff}
-.wsSide{min-width:240px;flex:1}
-#wsWords{display:flex;flex-wrap:wrap;gap:8px 16px}
-.wsWord{font-size:17px;color:#fff}
-.wsWord.found{text-decoration:line-through;opacity:.8}
+.wsMain{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.wsBox{flex:2 1 420px;min-width:min(100%,320px);display:grid;place-items:center;padding:10px;background:#05010b radial-gradient(#1a0f36 1px,transparent 1.5px) 0 0/8px 8px;box-shadow:0 0 0 3px var(--line2)}
+#wsGrid{width:min(100%,max(300px,calc(100vh - 190px)));height:auto;aspect-ratio:1;image-rendering:pixelated;touch-action:none;cursor:var(--cp,pointer)}
+.wsSide{flex:1 1 240px;min-width:220px;padding:12px;background:#120a26;box-shadow:inset 0 0 0 3px #2a1d52,inset -6px -6px 0 3px #0c0620,4px 4px 0 #05010b}
+.wsHead{font:11px var(--title);color:var(--lilac);margin-bottom:12px;letter-spacing:1px}
+.wsHead b{color:#ffd84a;font-weight:normal}
+#wsWords{display:flex;flex-wrap:wrap;gap:8px}
+.wsWord{font:clamp(9px,.9vw,12px) var(--title);color:#fff;padding:7px 9px 6px;background:#2a1f50;box-shadow:inset -3px -3px 0 #160d30,inset 3px 3px 0 #3e3070;text-transform:uppercase}
+.wsWord.found{color:#130a20;text-decoration:line-through;text-decoration-thickness:2px;box-shadow:inset -3px -3px 0 rgba(0,0,0,.3),inset 3px 3px 0 rgba(255,255,255,.35)}
 `;  // le style de ce plugin (il utilise les variables du thème de NeoDex)
 export default async function (ctx) {
   const view = ctx.view;
@@ -92,6 +93,14 @@ const WS_SIZES = {10: 8, 12: 12, 15: 18, 18: 24, 20: 30};  // grid size -> numbe
 const WS_DIRS = {facile: [[1, 0], [0, 1]], normal: [[1, 0], [0, 1], [1, 1], [1, -1]], difficile: [[1, 0], [0, 1], [1, 1], [1, -1], [-1, 0], [0, -1], [-1, -1], [-1, 1]]};
 const WS_FILL = 'EEEEEEAAAAASSSSIIIINNNNTTTTRRRRUUULLLOOOODDDCCCPPMMMVGFBHQXJYZKW';  // French letter frequencies
 const WS_COLORS = ['#ff5ad9', '#7fe0ee', '#8ee8a0', '#ffd07a', '#b46aee', '#ff9a3c', '#ff4f6d', '#9db4ff'];
+const WS_C = 12, WS_P = 8;  // la grille est dessinée en pixel art : 12 pixels par case, 8 de bord, puis agrandie à l'écran
+const cv = $('wsGrid'), g = cv.getContext('2d');
+function wsBrush(x0, y0, x1, y1, r, color) {  // un trait épais en pixels (une pastille aux coins coupés poussée le long du mot)
+  g.fillStyle = color; const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0)) || 1;
+  for (let i = 0; i <= n; i++) { const x = Math.round(x0 + (x1 - x0) * i / n), y = Math.round(y0 + (y1 - y0) * i / n); g.fillRect(x - r + 1, y - r, 2 * r - 2, 2 * r); g.fillRect(x - r, y - r + 1, 2 * r, 2 * r - 2); }
+}
+const wsMid = c => [WS_P + c.x * WS_C + WS_C / 2, WS_P + c.y * WS_C + WS_C / 2];
+function wsStroke(a, b, color, k = 1) { const [x0, y0] = wsMid(a), [x1, y1] = wsMid(b); wsBrush(x0, y0, x1, y1, 6, '#05010b'); wsBrush(x0, y0, x1, y1, 5, color); if (k) wsBrush(x0 - 1, y0 - 2, x1 - 1, y1 - 2, 2, 'rgba(255,255,255,.28)'); }
 let ws = null;
 function wsNew() {
   const n = +$('wsSize').value, lvl = $('wsLevel').value, theme = $('wsTheme').value, dirs = WS_DIRS[lvl];
@@ -124,31 +133,35 @@ const wsCells = (a, b) => {  // the cells from a to b if they are on a line in o
   return Array.from({length: len + 1}, (_, i) => ({x: a.x + dx * i, y: a.y + dy * i}));
 };
 function wsRender() {
-  const box = $('wsGrid'), size = Math.max(26, Math.min(48, Math.floor(Math.min(innerHeight - 280, 720) / ws.n)));
-  box.style.gridTemplateColumns = `repeat(${ws.n}, ${size}px)`; box.style.fontSize = Math.round(size * .5) + 'px';
-  const color = new Map();
-  ws.words.forEach((w, k) => { if (w.found) for (let i = 0; i < w.p.length; i++) color.set((w.y + w.dy * i) * ws.n + w.x + w.dx * i, WS_COLORS[k % WS_COLORS.length]); });
-  const sel = new Set((ws.sel?.cells || []).map(c => c.y * ws.n + c.x));
-  box.replaceChildren(...ws.grid.flatMap((r, y) => r.map((c, x) => {
-    const d = el('div', 'wsCell' + (sel.has(y * ws.n + x) ? ' sel' : ''), c); d.dataset.x = x; d.dataset.y = y;
-    const col = color.get(y * ws.n + x); if (col) { d.style.background = col + '55'; d.style.color = '#fff'; }
-    d.style.height = size + 'px'; return d;
-  })));
-  $('wsWords').replaceChildren(...ws.words.map((w, k) => { const s = el('span', 'wsWord' + (w.found ? ' found' : ''), w.word); if (w.found) s.style.color = WS_COLORS[k % WS_COLORS.length]; return s; }));
-  const left = ws.words.filter(w => !w.found).length, rec = games.best['ws' + ws.n + ws.lvl];
+  const n = ws.n, W = n * WS_C + WS_P * 2; if (cv.width !== W) { cv.width = cv.height = W; }
+  g.imageSmoothingEnabled = false;
+  // la feuille : un cadre en relief, des cases un peu plus claires une sur deux
+  g.fillStyle = '#05010b'; g.fillRect(0, 0, W, W); g.fillStyle = '#2a1d52'; g.fillRect(1, 1, W - 2, W - 2); g.fillStyle = '#3e3070'; g.fillRect(1, 1, W - 2, 2); g.fillRect(1, 1, 2, W - 2);
+  g.fillStyle = '#0c0620'; g.fillRect(4, 4, W - 8, W - 8); g.fillStyle = '#160d30'; g.fillRect(WS_P - 2, WS_P - 2, n * WS_C + 4, n * WS_C + 4);
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if ((x + y) % 2) { g.fillStyle = '#1b1138'; g.fillRect(WS_P + x * WS_C, WS_P + y * WS_C, WS_C, WS_C); }
+  // un trait de couleur par mot trouvé, puis la sélection en cours (blanche)
+  ws.words.forEach((w, k) => { if (w.found) wsStroke(w, {x: w.x + w.dx * (w.p.length - 1), y: w.y + w.dy * (w.p.length - 1)}, WS_COLORS[k % WS_COLORS.length]); });
+  if (ws.sel) wsStroke(ws.sel.cells[0], ws.sel.cells.at(-1), 'rgba(240,232,255,.75)', 0);
+  const on = new Set(); ws.words.forEach(w => { if (w.found) for (let i = 0; i < w.p.length; i++) on.add((w.y + w.dy * i) * n + w.x + w.dx * i); }); (ws.sel?.cells || []).forEach(c => on.add(c.y * n + c.x));
+  g.font = '8px "Press Start 2P", monospace'; g.textBaseline = 'top'; g.textAlign = 'left';
+  ws.grid.forEach((r, y) => r.forEach((c, x) => { const X = WS_P + x * WS_C + 2, Y = WS_P + y * WS_C + 2, hit = on.has(y * n + x); g.fillStyle = hit ? '#05010b' : '#0c0620'; g.fillText(c, X + 1, Y + 1); g.fillStyle = hit ? '#ffffff' : '#c8b8f0'; g.fillText(c, X, Y); }));
+  if (ws.done) { const h = 34, y = (W - h) / 2 | 0; g.fillStyle = 'rgba(5,1,11,.82)'; g.fillRect(0, y, W, h); g.fillStyle = '#ffd84a'; g.textAlign = 'center'; g.fillText('GRILLE FINIE !', W / 2, y + 7); g.fillStyle = '#fff'; g.fillText(clock(ws.secs), W / 2, y + 20); g.textAlign = 'left'; }
+  $('wsWords').replaceChildren(...ws.words.map((w, k) => { const s = el('span', 'wsWord' + (w.found ? ' found' : ''), w.word); if (w.found) s.style.background = WS_COLORS[k % WS_COLORS.length]; return s; }));
+  const left = ws.words.filter(w => !w.found).length, rec = games.best['ws' + ws.n + ws.lvl]; $('wsCount').textContent = (ws.words.length - left) + ' / ' + ws.words.length;
   $('wsInfo').textContent = (ws.done ? 'Grille finie en ' + clock(ws.secs) : (ws.words.length - left) + ' / ' + ws.words.length + ' mots · ' + clock(ws.secs)) + ' · record ' + (rec ? clock(rec) : '—');
 }
+const wsAt = e => { const r = cv.getBoundingClientRect(), k = cv.width / r.width, x = Math.floor(((e.clientX - r.left) * k - WS_P) / WS_C), y = Math.floor(((e.clientY - r.top) * k - WS_P) / WS_C); return x >= 0 && y >= 0 && x < ws.n && y < ws.n ? {x, y} : null; };
 $('wsGrid').onpointerdown = e => {
-  const c = e.target.closest('.wsCell'); if (!c || ws.done) return;
-  e.preventDefault(); $('wsGrid').setPointerCapture(e.pointerId);
-  const a = {x: +c.dataset.x, y: +c.dataset.y}; ws.sel = {a, cells: [a]};
+  const a = ws && wsAt(e); if (!a || ws.done) return;
+  e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch {}
+  ws.sel = {a, cells: [a]};
   if (!ws.t0) { ws.t0 = Date.now(); ws.timer = setInterval(() => { ws.secs = Math.floor((Date.now() - ws.t0) / 1000); if (view.classList.contains('on')) wsRender(); }, 1000); }
   wsRender();
 };
 $('wsGrid').onpointermove = e => {
   if (!ws?.sel) return;
-  const c = document.elementFromPoint(e.clientX, e.clientY)?.closest('.wsCell'); if (!c) return;
-  const cells = wsCells(ws.sel.a, {x: +c.dataset.x, y: +c.dataset.y});
+  const c = wsAt(e); if (!c) return;
+  const cells = wsCells(ws.sel.a, c);
   const key = cells => cells.at(-1).x + ',' + cells.at(-1).y;
   if (cells && key(cells) !== key(ws.sel.cells)) { ws.sel.cells = cells; wsRender(); }
 };
@@ -163,6 +176,9 @@ $('wsGrid').onpointerup = () => {
   wsRender();
 };
 $('wsNew').onclick = wsNew;
+document.fonts?.load('8px "Press Start 2P"').then(() => ws && wsRender()).catch(() => {});
+console.assert(wsCells({x: 0, y: 0}, {x: 3, y: 3}).length === 4 && wsCells({x: 5, y: 1}, {x: 2, y: 1}).at(-1).x === 2 && wsCells({x: 0, y: 0}, {x: 2, y: 3}) === null, 'mots mêlés : sélection');
+cv.__ws = {st: () => ws, mid: c => { const r = cv.getBoundingClientRect(), k = r.width / cv.width, [x, y] = wsMid(c); return [r.left + x * k, r.top + y * k]; }};
 $('wsSize').onchange = $('wsLevel').onchange = $('wsTheme').onchange = wsNew;  // (non indenté : les textes sur plusieurs lignes restent exactement les tiens)
   // ---- fin ----
   ctx.onOpen(() => { ws ? wsRender() : wsNew(); });

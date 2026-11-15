@@ -7,9 +7,11 @@ Des mots cachés dans une grille de lettres, à retrouver en glissant de leur pr
 ## Comment jouer
 
 - La liste **Mots à trouver** donne tous les mots cachés, rangés par ordre alphabétique.
-- **Glisse** de la première à la dernière lettre d'un mot, en ligne droite ; dans le sens inverse, ça marche aussi. Un mot trouvé se colore dans la grille et dans la liste.
+- **Glisse** de la première à la dernière lettre d'un mot, en ligne droite ; dans le sens inverse, ça marche aussi. Un mot trouvé est barré d'un **trait de couleur** dans la grille (un trait en pixels, droit ou en diagonale), et sa case prend la même couleur dans la liste. Pendant que tu glisses, un trait blanc montre ta sélection.
 - Les accents et les cédilles disparaissent dans la grille : « BESANÇON » s'y cache en « BESANCON ». La liste garde l'orthographe exacte.
 - Le chronomètre démarre à ta première sélection et s'arrête quand tous les mots sont trouvés.
+
+La grille est dessinée en pixel art et grandit avec la fenêtre, du petit portable au grand écran.
 
 ## Réglages
 
