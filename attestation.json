@@ -1,9 +1,9 @@
 {
   "pluginId": "neodex.motsmeles",
   "repo": "NDesumeur/neodex-plugin-mots-meles",
-  "version": "1.2.1",
-  "sha256": "5eee5bc458740e47990dc6ead6d8c5e3c4082b2a52a1217b449451be05d9be17",
-  "approvedAt": "2026-11-19T23:26:40.327Z",
+  "version": "1.3.0",
+  "sha256": "31fcc6944b33012504be9af120e2c29fdb87bd45db17e0a5ec2d57a4069c14ce",
+  "approvedAt": "2026-11-25T17:16:44.179Z",
   "neobase": ">=4.0.0",
-  "signature": "t5T+VCjAEUsmpGyawVIqc6WhxZbaDvs5iUL95LNYdCTZuP9ltiU5VzR7quiYfGCg9Q9uQxBmiqQMig3qUHJnCg=="
+  "signature": "QN4aVgB9Lfd4QAgj0gLQENOJuJ33vj5xSeTLn/td/jkhaGy6VcRuFMfTCz3D0wjQI3myrCt+zNZ17sQVF7WiDA=="
 }
