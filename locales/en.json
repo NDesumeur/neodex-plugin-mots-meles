@@ -47,5 +47,18 @@
  "voiture, camion, camionnette, bus, autocar, tramway, métro, train, tgv, locomotive, wagon, moto, scooter, vélo, trottinette, skateboard, taxi, ambulance, dépanneuse, tracteur, pelleteuse, bulldozer, grue, bétonnière, avion, hélicoptère, planeur, montgolfière, dirigeable, fusée, navette, satellite, bateau, voilier, paquebot, ferry, cargo, péniche, chalutier, yacht, canot, barque, pirogue, radeau, sous-marin, porte-avions, jet-ski, catamaran, téléphérique, télésiège, funiculaire, monorail, calèche, charrette, traîneau, quad, limousine, cabriolet, autoroute, carrefour, rond-point, parking, gare, aéroport, port, station, péage, feu rouge, panneau, permis, volant, pneu, moteur, essence, batterie, frein, klaxon, rétroviseur, ceinture, passager, billet": "car, truck, van, bus, coach, tramway, metro, train, tgv, locomotive, wagon, motorcycle, scooter, bicycle, skateboard, taxi, ambulance, tow truck, tractor, excavator, bulldozer, crane, cement mixer, plane, helicopter, glider, hot air balloon, airship, rocket, shuttle, satellite, boat, sailboat, liner, ferry, cargo ship, barge, trawler, yacht, canoe, barque, dugout canoe, raft, submarine, aircraft carrier, jet-ski, catamaran, cable car, chairlift, funicular, monorail, horse-drawn carriage, cart, sled, quad, limousine, convertible, highway, crossroads, roundabout, parking lot, train station, airport, port, station, toll, red light, sign, license, steering wheel, tire, engine, gasoline, battery, brake, horn, rear-view mirror, belt, passenger, ticket",
  "GRILLE FINIE !": "GRID COMPLETE!",
  "mots mêlés : sélection": "word search: selection",
- "Rien n'est synchronisé : tes records restent sur cet appareil.": "Nothing is synced: your records stay on this device."
+ "Rien n'est synchronisé : tes records restent sur cet appareil.": "Nothing is synced: your records stay on this device.",
+ "Tout trouvé": "All found",
+ "Finir une première grille": "Finish your first grid",
+ "Chercheur de mots": "Word seeker",
+ "Finir 10 grilles": "Finish 10 grids",
+ "Œil de faucon": "Hawk eye",
+ "Finir 50 grilles": "Finish 50 grids",
+ "En diagonale": "Diagonally",
+ "Finir une grille en Normal": "Finish a grid on Normal",
+ "Dans tous les sens": "Every which way",
+ "Finir une grille en Difficile": "Finish a grid on Hard",
+ "Lecture rapide": "Speed reading",
+ "Finir une grille en Normal ou Difficile en moins de 90 secondes": "Finish a Normal or Hard grid in under 90 seconds",
+ "Grilles finies": "Grids finished"
 }

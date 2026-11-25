@@ -34,6 +34,9 @@ export default async function (ctx) {
   const saveGames = () => { clearTimeout(gamesTimer); gamesTimer = setTimeout(() => { gamesTimer = null; folder.write('games', games).catch(() => {}); }, 500); };
   const best = (k, v, higher = true) => { const b = games.best[k]; if (b == null || (higher ? v > b : v < b)) { games.best[k] = v; saveGames(); return true; } return false; };
   const gstore = (k, init) => (games[k] ??= init);  // la section d'un jeu
+  // les trophées de NeoDex (3.4.8 et plus) : succès et records déclarés dans plugin.json ; sur un NeoDex plus ancien, rien ne se passe
+  const trophy = id => { ctx.games?.unlock(id).catch(() => {}); };
+  const trophyRecord = (id, v) => { if (v != null && Number.isFinite(+v)) ctx.games?.record(id, +v).catch(() => {}); };
 function gameLoop(st, appKey, update, draw) {
   cancelAnimationFrame(st.raf);
   const STEP = 1000 / 60; let acc = 0, last = performance.now();
@@ -171,7 +174,7 @@ $('wsGrid').onpointerup = () => {
   const w = ws.words.find(w => !w.found && w.p.length === cells.length && ((w.x === a.x && w.y === a.y && w.x + w.dx * (w.p.length - 1) === b.x && w.y + w.dy * (w.p.length - 1) === b.y) || (w.x === b.x && w.y === b.y && w.x + w.dx * (w.p.length - 1) === a.x && w.y + w.dy * (w.p.length - 1) === a.y)));
   if (w) {
     w.found = true; sfx('notify');
-    if (ws.words.every(w => w.found)) { ws.done = true; clearInterval(ws.timer); ws.secs = Math.max(1, Math.round((Date.now() - ws.t0) / 1000)); const st = gstore('words', {done: 0}); st.done++; if (best('ws' + ws.n + ws.lvl, ws.secs, false)) toast('Nouveau record : ' + clock(ws.secs)); saveGames(); sfx('launch'); }
+    if (ws.words.every(w => w.found)) { ws.done = true; clearInterval(ws.timer); ws.secs = Math.max(1, Math.round((Date.now() - ws.t0) / 1000)); const st = gstore('words', {done: 0}); st.done++; setTimeout(wsTrophies); if (best('ws' + ws.n + ws.lvl, ws.secs, false)) toast('Nouveau record : ' + clock(ws.secs)); saveGames(); sfx('launch'); }
   }
   wsRender();
 };
@@ -181,5 +184,13 @@ console.assert(wsCells({x: 0, y: 0}, {x: 3, y: 3}).length === 4 && wsCells({x: 5
 cv.__ws = {st: () => ws, mid: c => { const r = cv.getBoundingClientRect(), k = r.width / cv.width, [x, y] = wsMid(c); return [r.left + x * k, r.top + y * k]; }};
 $('wsSize').onchange = $('wsLevel').onchange = $('wsTheme').onchange = wsNew;  // (non indenté : les textes sur plusieurs lignes restent exactement les tiens)
   // ---- fin ----
-  ctx.onOpen(() => { ws ? wsRender() : wsNew(); });
+  // les trophées, tirés des statistiques et des records gardés (aussi à l'ouverture : ce qui a été fait avant compte)
+  function wsTrophies() {
+    const n = games.words?.done || 0, ks = Object.keys(games.best).filter(k => /^ws\d+(facile|normal|difficile)$/.test(k)), lv = l => ks.filter(k => k.endsWith(l));
+    trophyRecord('grilles', n || null);
+    if (n >= 1) trophy('premier'); if (n >= 10) trophy('dix'); if (n >= 50) trophy('cinquante');
+    if (lv('normal').length || lv('difficile').length) trophy('normal'); if (lv('difficile').length) trophy('difficile');
+    if ([...lv('normal'), ...lv('difficile')].some(k => games.best[k] < 90)) trophy('eclair');
+  }
+  ctx.onOpen(() => { ws ? wsRender() : wsNew(); wsTrophies(); });
 }
